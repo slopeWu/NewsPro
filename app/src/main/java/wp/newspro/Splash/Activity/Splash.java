@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.google.gson.Gson;
@@ -37,6 +38,7 @@ public class Splash extends AppCompatActivity {
     private static final String slpash_SharedPreferences_json = "json";
     private static final String slpash_SharedPreferences_outTime = "outTime";
     private static final String slpash_SharedPreferences_lastTime = "lastTime";
+    private static final String slpash_SharedPreferences_pic_index = "pic_index";
     private SharedPreferences sharedPreferences;
 
 
@@ -44,35 +46,44 @@ public class Splash extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
         sharedPreferences = this.getSharedPreferences(slpash_SharedPreferences, MODE_PRIVATE);
         innitView();
         innitData();
         showImage();
-
     }
 
     private void showImage() {
+        // 每次显示的图片不一样，解决办法【存到shared里面,每次 %、++】
+        int show_pic_index = sharedPreferences.getInt(slpash_SharedPreferences_pic_index, 0);
         String json = sharedPreferences.getString(slpash_SharedPreferences_json, "");
         if (null != json) {
             Ads ads = new Gson().fromJson(json, Ads.class);
             if (null == ads) return;
             List<AdsDetail> adsDetails = ads.getAds();
-            for (int i = 0; i < adsDetails.size(); i++) {
-                if (null != adsDetails && adsDetails.size() != 0) {
-                    AdsDetail detail = adsDetails.get(0);
-                    String image_url = detail.getRes_url().get(0);
-                    String md5 = Md5Helper.toMD5(image_url);
-                    File cacheFile = new File(Environment.getExternalStorageDirectory(), Constant.IMGCACHE);
-                    File file = new File(cacheFile, md5 + ".jpg");
-                    if (file.exists()) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                        wp_splash_ads.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        wp_splash_ads.setImageBitmap(bitmap);
-                    }
+            show_pic_index = show_pic_index % adsDetails.size();
+            if (null != adsDetails && adsDetails.size() != 0) {
+                AdsDetail detail = adsDetails.get(show_pic_index);
+                String image_url = detail.getRes_url().get(0);
+                String md5 = Md5Helper.toMD5(image_url);
+                File cacheFile = new File(Environment.getExternalStorageDirectory(), Constant.IMGCACHE);
+                File file = new File(cacheFile, md5 + ".jpg");
+                if (file.exists()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                    wp_splash_ads.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    wp_splash_ads.setImageBitmap(bitmap);
+                    show_pic_index++;
+                    //保存图片索引
+                    sharedPreferences.edit().putInt(slpash_SharedPreferences_pic_index, show_pic_index).commit();
+                    //// TODO: 2017/6/5 点击图片进入广告详情
                 }
             }
+        } else {
+            // TODO: 2017/6/5  没有缓存图片，直接跳转到mainActivity
         }
+
+
     }
 
     private void innitData() {
