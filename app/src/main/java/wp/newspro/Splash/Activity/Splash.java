@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -58,7 +59,7 @@ public class Splash extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
-        mContext = getApplication();
+        mContext = getApplicationContext();
         sharedPreferences = mContext.getSharedPreferences(slpash_SharedPreferences, MODE_PRIVATE);
         mhandler = new Handler();
 
@@ -95,7 +96,9 @@ public class Splash extends AppCompatActivity {
                         public void onClick(View view) {
                             String url = detail.getAction_params().getLink_url();
                             if (null != url && !url.isEmpty()) {
-                                showAdsView(url);
+                                showAdsView(mContext, url);
+                            } else {
+                                Toast.makeText(mContext, "页面不存在....", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -108,10 +111,11 @@ public class Splash extends AppCompatActivity {
     }
 
     //跳转到广告页面
-    private void showAdsView(String action_params) {
+    private void showAdsView(Context mContext, String action_params) {
+        WeakReference<Context> w = new WeakReference<Context>(mContext);
         try {
             Intent intent = new Intent();
-            intent.setClass(Splash.this, WebViewActivity.class);
+            intent.setClass(w.get(), WebViewActivity.class);
             intent.putExtra(WebViewActivity.WEBVIEWACTIVITY_URL, action_params);
             startActivity(intent);
         } catch (Exception e) {
