@@ -8,12 +8,20 @@ import java.util.List;
  */
 
 public class Action implements Serializable {
-    private String action_params;//页面链接
+    private String link_url;//页面链接
+
+    public String getLink_url() {
+        return link_url;
+    }
+
+    public void setLink_url(String link_url) {
+        this.link_url = link_url;
+    }
 
     @Override
     public String toString() {
         return "Action{" +
-                "action_params='" + action_params + '\'' +
+                "link_url='" + link_url + '\'' +
                 '}';
     }
 }
