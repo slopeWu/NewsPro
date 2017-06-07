@@ -65,6 +65,7 @@ public class WebViewActivity extends AppCompatActivity {
     }
 
     private void innitView() {
+        //动态创建webView防止内存溢出
         relativeLayout = (LinearLayout) findViewById(R.id.wp_ll_webView);
         webView = new WebView(getApplicationContext());
         relativeLayout.addView(webView);

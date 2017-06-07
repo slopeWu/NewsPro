@@ -90,7 +90,7 @@ public class Splash extends AppCompatActivity {
                     show_pic_index++;
                     //保存图片索引
                     sharedPreferences.edit().putInt(slpash_SharedPreferences_pic_index, show_pic_index).commit();
-                    //// TODO: 2017/6/5 点击图片进入广告详情
+                    // 点击图片进入广告详情
                     wp_splash_ads.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
