@@ -4,14 +4,10 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.nfc.Tag;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -19,7 +15,7 @@ import java.util.List;
 import wp.newspro.Constance.Constant;
 import wp.newspro.Splash.Bean.Ads;
 import wp.newspro.Splash.Bean.AdsDetail;
-import wp.newspro.util.Md5Helper;
+import wp.newspro.Util.Md5Helper;
 
 /**
  * Created by Administrator on 2017/5/31.

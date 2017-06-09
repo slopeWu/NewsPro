@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,14 +18,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 
 import okhttp3.Call;
@@ -35,15 +32,17 @@ import okhttp3.Response;
 import wp.newspro.Constance.Constant;
 import wp.newspro.MainActivity;
 import wp.newspro.R;
+import wp.newspro.SelfView.ITimerViewListener;
+import wp.newspro.SelfView.TimerView;
 import wp.newspro.Splash.Bean.Ads;
 import wp.newspro.Splash.Bean.AdsDetail;
 import wp.newspro.Splash.DownloadImageService;
-import wp.newspro.util.Md5Helper;
+import wp.newspro.Util.Md5Helper;
 
 public class Splash extends AppCompatActivity {
     private static SharedPreferences sharedPreferences;
     private static Context mContext;
-    private Handler mhandler;
+    private MyHandler mhandler;
 
     private ImageView wp_splash_ads;//广告
     private static final String slpash_SharedPreferences = "slpash_SharedPreferences";
@@ -51,6 +50,12 @@ public class Splash extends AppCompatActivity {
     private static final String slpash_SharedPreferences_outTime = "outTime";
     private static final String slpash_SharedPreferences_lastTime = "lastTime";
     private static final String slpash_SharedPreferences_pic_index = "pic_index";
+    private TimerView timerView;
+    private int space = 50;//每次移动250毫秒
+    private int length = 10 * 1000;//总时间
+    private int totalTimers;//总的绘制次数
+    private int timers;//绘制的次数
+    private int WebViewActivity_requestCode = 1;
 
 
     @Override
@@ -61,18 +66,35 @@ public class Splash extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         mContext = getApplicationContext();
         sharedPreferences = mContext.getSharedPreferences(slpash_SharedPreferences, MODE_PRIVATE);
-        mhandler = new Handler();
+        mhandler = new MyHandler(this);
 
         innitView();
         innitData();
         showImage();
     }
 
+    /**
+     * 计时器执行方法
+     */
+    Runnable refreshing = new Runnable() {
+        @Override
+        public void run() {
+            Message message = mhandler.obtainMessage(0);
+            message.arg1 = timers;
+            mhandler.sendMessage(message);
+            mhandler.postDelayed(this, space);
+            timers++;
+        }
+    };
+
     private void showImage() {
         // 每次显示的图片不一样，解决办法【存到shared里面,每次 %、++】
         int show_pic_index = sharedPreferences.getInt(slpash_SharedPreferences_pic_index, 0);
         String json = sharedPreferences.getString(slpash_SharedPreferences_json, "");
         if (null != json) {
+            //显示自定义计时控件,执行定时任务
+            mhandler.post(refreshing);
+
             Ads ads = new Gson().fromJson(json, Ads.class);
             if (null == ads) return;
             List<AdsDetail> adsDetails = ads.getAds();
@@ -117,22 +139,39 @@ public class Splash extends AppCompatActivity {
             Intent intent = new Intent();
             intent.setClass(w.get(), WebViewActivity.class);
             intent.putExtra(WebViewActivity.WEBVIEWACTIVITY_URL, action_params);
-            startActivity(intent);
+            startActivityForResult(intent, WebViewActivity_requestCode);
+            mhandler.removeCallbacks(refreshing);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 0) {
+            if (requestCode == WebViewActivity_requestCode) {
+                //广告退出的时候 直接进入main
+                mhandler.removeCallbacks(refreshing);
+                gotoMainActivity();
+            }
+        }
+    }
+
     //跳转到mainActivity
-    private Runnable goMainActivity = new Runnable() {
+    public Runnable goMainActivity = new Runnable() {
         @Override
         public void run() {
-            Intent intent = new Intent();
-            intent.setClass(Splash.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            gotoMainActivity();
         }
     };
+
+    public void gotoMainActivity() {
+        Intent intent = new Intent();
+        intent.setClass(Splash.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
     private void innitData() {
         String json = sharedPreferences.getString(slpash_SharedPreferences_json, "");
@@ -200,5 +239,46 @@ public class Splash extends AppCompatActivity {
      */
     private void innitView() {
         wp_splash_ads = (ImageView) findViewById(R.id.wp_splash_ads);
+        timerView = (TimerView) findViewById(R.id.wp_timerView);
+        timerView.setMtimeViewListener(new ITimerViewListener() {
+            @Override
+            public void onClickListener() {
+                mhandler.removeCallbacks(refreshing);
+                gotoMainActivity();
+            }
+        });
+        totalTimers = length / space;
+    }
+
+    private static class MyHandler extends Handler {
+        WeakReference<Splash> weakReference;
+
+        public MyHandler(Splash splash) {
+            weakReference = new WeakReference<Splash>(splash);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            Splash splash = weakReference.get();
+            if (null == splash) return;
+            switch (msg.what) {
+                case 0:
+                    int timers = msg.arg1;
+                    if (timers <= splash.totalTimers) {
+                        splash.timerView.setProgess(splash.totalTimers, splash.timers);
+                    } else {
+                        removeCallbacks(splash.refreshing);
+                        splash.gotoMainActivity();
+                    }
+                    break;
+            }
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mhandler.removeCallbacks(refreshing);
     }
 }

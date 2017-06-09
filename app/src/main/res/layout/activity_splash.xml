@@ -36,5 +36,15 @@
             android:id="@+id/wp_splash_ads"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+
+        <wp.newspro.SelfView.TimerView
+            android:id="@+id/wp_timerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="16dp"
+            app:innerColor="@android:color/holo_red_dark"
+            app:outerColor="@android:color/darker_gray"
+            app:text="跳过"/>
     </RelativeLayout>
 </RelativeLayout>

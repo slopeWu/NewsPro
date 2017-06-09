@@ -3,6 +3,7 @@ package wp.newspro.Splash.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -16,12 +17,13 @@ public class WebViewActivity extends AppCompatActivity {
     private static WebView webView;
     private static String action_params;//广告详情的url
     private static LinearLayout relativeLayout;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
-        Intent intent = getIntent();
+        intent = getIntent();
         action_params = intent.getStringExtra(WEBVIEWACTIVITY_URL);
         innitView();
         showPage();
@@ -58,10 +60,13 @@ public class WebViewActivity extends AppCompatActivity {
         super.onDestroy();
         //清空子view,防止leaks
         relativeLayout.removeAllViews();
-        relativeLayout=null;
+        relativeLayout = null;
         webView.removeAllViews();
         webView.destroy();
         webView = null;
+        //退出的时候给splash一个回调
+        setResult(0, intent);
+        finish();
     }
 
     private void innitView() {

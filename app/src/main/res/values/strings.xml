@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">网易新网</string>
+    <array name="tabSpec">
+        <item>新闻</item>
+        <item>阅读</item>
+        <item>视频</item>
+        <item>话题</item>
+        <item>我</item>
+    </array>
 </resources>

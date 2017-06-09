@@ -1,4 +1,4 @@
-package wp.newspro.util;
+package wp.newspro.Util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
