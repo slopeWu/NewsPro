@@ -1,12 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="slope"
-        android:textSize="40sp"/>
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_red_dark">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:src="@drawable/base_common_default_icon_small" />
+
+        <TextView
+            android:id="@+id/wp_news_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:paddingRight="6dp"
+            android:text="+5/40"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/wp_news_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/wp_news_tv"
+            android:src="@drawable/ic_main_menu_gold" />
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/wp_news_icon"
+            android:src="@drawable/ic_main_menu_search" />
+
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.ogaclejapan.smarttablayout.SmartTabLayout
+            android:id="@+id/wp_stl"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            app:stl_customTabTextLayoutId="@layout/item_tab"
+            app:stl_indicatorColor="@android:color/holo_red_dark"
+            app:stl_indicatorThickness="3dp">
+
+        </com.ogaclejapan.smarttablayout.SmartTabLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/wp_newVp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v4.view.ViewPager>
+    </FrameLayout>
 </LinearLayout>

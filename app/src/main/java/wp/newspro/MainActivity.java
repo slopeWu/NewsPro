@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTabHost fragmentTabHost;
     private static Context mContext;
     private Class[] mClass = new Class[]{NewsFragment.class, ReadingFragment.class, VedioFragment.class, TopicFragment.class, MineFragment.class};
+    private int[] mSelect = new int[]{R.drawable.select_news, R.drawable.select_reading, R.drawable.select_vedio, R.drawable.select_topic, R.drawable.select_mine};
     private String[] tabSpecArray;
 
     @Override
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         View view = layoutInflater.inflate(R.layout.itemtabspec_view, null);
         ImageView wp_tabSpecPic = (ImageView) view.findViewById(R.id.wp_tabSpecPic);
         TextView wp_tabSpecName = (TextView) view.findViewById(R.id.wp_tabSpecName);
+        wp_tabSpecPic.setImageResource(mSelect[index]);
         wp_tabSpecName.setText(tabSpecArray[index]);
         return view;
     }

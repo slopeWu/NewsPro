@@ -9,7 +9,7 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_gravity="center"
-        android:src="@drawable/biz_navigation_tab_news"/>
+        android:src="@drawable/biz_navigation_tab_news" />
 
     <TextView
         android:id="@+id/wp_tabSpecName"
@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        android:textSize="12sp"
         android:text="新闻"
-        android:textColor="#000"/>
+        android:textColor="@color/select_color"/>
 </LinearLayout>
