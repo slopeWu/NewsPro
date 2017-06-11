@@ -6,10 +6,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
@@ -35,16 +36,30 @@ import wp.newspro.R;
  */
 
 public class TopFragment extends Fragment {
-    private Context mContext;
-    private Handler mHandler;
-    private ListView listView;
-    private List<TopDetail> mTopDetails;
-    private List<Banner> mBanners;
+    private static Context mContext;
+    private static ListView listView;
+    private static List<TopDetail> mTopDetails;
+    private static List<Banner> mBanners;
+
+
+    private static Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    FragmentTopAdapter topAdapter = new FragmentTopAdapter(mTopDetails, mContext);
+                    listView.setAdapter(topAdapter);
+                    break;
+            }
+        }
+    };
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_layout, container, false);
+        listView = (ListView) view.findViewById(R.id.wp_top_lv);
         return view;
     }
 
@@ -52,25 +67,11 @@ public class TopFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mContext = getActivity().getApplicationContext();
-        listView = (ListView) getActivity().findViewById(R.id.wp_top_ll);
-
-
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case 0:
-                        FragmentTopAdapter topAdapter = new FragmentTopAdapter(mTopDetails, mContext);
-                        listView.setAdapter(topAdapter);
-                        break;
-                }
-            }
-        };
         innitData();
     }
 
     //初始化数据
-    private void innitData() {
+    private static void innitData() {
         mBanners = new ArrayList<>();
         mTopDetails = new ArrayList<>();
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();

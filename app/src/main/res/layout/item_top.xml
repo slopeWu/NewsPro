@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-    <ImageView
+    <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/wp_itme_top_image"
-        android:layout_width="100dp"
-        android:layout_height="60dp"
-        android:src="@drawable/ad"/>
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        fresco:placeholderImage="@mipmap/ic_launcher"/>
 
     <TextView
         android:id="@+id/wp_itme_top_title"
@@ -16,7 +19,9 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/wp_itme_top_image"
         android:padding="6dp"
-        android:text="啥快递减肥哈萨克电话法兰克"/>
+        android:text="啥快递减肥哈萨克电话法兰克"
+        android:textColor="#000"
+        android:textSize="16sp"/>
 
     <TextView
         android:id="@+id/wp_item_top_resouse"
@@ -24,8 +29,9 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/wp_itme_top_image"
         android:layout_toRightOf="@id/wp_itme_top_image"
-        android:padding="6dp"
-        android:text="杀了肯定会分手快乐回复"/>
+        android:paddingLeft="6dp"
+        android:text="杀了肯定会分手快乐回复"
+        android:textColor="#000"/>
 
     <TextView
         android:id="@+id/wp_item_top_replyCount"
@@ -33,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/wp_item_top_resouse"
         android:layout_alignParentRight="true"
-        android:padding="6dp"
-        android:text="看看空间"/>
+        android:paddingRight="6dp"
+        android:text="看看空间"
+        android:textColor="#000"/>
 </RelativeLayout>

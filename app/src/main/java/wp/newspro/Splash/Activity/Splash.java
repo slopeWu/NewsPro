@@ -52,7 +52,7 @@ public class Splash extends AppCompatActivity {
     private static final String slpash_SharedPreferences_pic_index = "pic_index";
     private TimerView timerView;
     private int space = 50;//每次移动250毫秒
-    private int length = 10 * 1000;//总时间
+    private int length = 5 * 1000;//总时间
     private int totalTimers;//总的绘制次数
     private int timers;//绘制的次数
     private int WebViewActivity_requestCode = 1;

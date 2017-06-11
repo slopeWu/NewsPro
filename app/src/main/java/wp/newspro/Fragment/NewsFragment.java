@@ -1,5 +1,6 @@
 package wp.newspro.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +34,6 @@ import wp.newspro.R;
  */
 
 public class NewsFragment extends Fragment {
-
-    private static FragmentActivity activity;
     private SmartTabLayout smartTabLayout;
     private ViewPager viewPager;
     private List<Fragment> mFragmentList;
@@ -42,15 +42,15 @@ public class NewsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_news, container, false);
+        viewPager = (ViewPager) view.findViewById(R.id.wp_newVp);
+        smartTabLayout = (SmartTabLayout) view.findViewById(R.id.wp_stl);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        activity = getActivity();
-        viewPager = (ViewPager) activity.findViewById(R.id.wp_newVp);
-        String[] stringArray = activity.getResources().getStringArray(R.array.newsTitle);
+        String[] stringArray = getResources().getStringArray(R.array.newsTitle);
         mFragmentList = new ArrayList<>();
 
         mFragmentList.add(new TopFragment());
@@ -67,7 +67,7 @@ public class NewsFragment extends Fragment {
                 (getChildFragmentManager(), mFragmentList, stringArray);
         viewPager.setAdapter(fragmentNewsAdapter);
 
-        smartTabLayout = (SmartTabLayout) activity.findViewById(R.id.wp_stl);
+
         smartTabLayout.setViewPager(viewPager);
     }
 }
