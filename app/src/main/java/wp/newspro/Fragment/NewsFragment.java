@@ -62,10 +62,9 @@ public class NewsFragment extends Fragment {
         mFragmentList.add(new CaiJingFragment());
         mFragmentList.add(new TechnologyFragment());
         mFragmentList.add(new CarFragment());
-        
 
         FragmentNewsAdapter fragmentNewsAdapter = new FragmentNewsAdapter
-                (activity.getSupportFragmentManager(), mFragmentList, stringArray);
+                (getChildFragmentManager(), mFragmentList, stringArray);
         viewPager.setAdapter(fragmentNewsAdapter);
 
         smartTabLayout = (SmartTabLayout) activity.findViewById(R.id.wp_stl);

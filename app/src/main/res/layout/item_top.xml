@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/wp_itme_top_image"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ad"/>
+
+    <TextView
+        android:id="@+id/wp_itme_top_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/wp_itme_top_image"
+        android:padding="6dp"
+        android:text="啥快递减肥哈萨克电话法兰克"/>
+
+    <TextView
+        android:id="@+id/wp_item_top_resouse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/wp_itme_top_image"
+        android:layout_toRightOf="@id/wp_itme_top_image"
+        android:padding="6dp"
+        android:text="杀了肯定会分手快乐回复"/>
+
+    <TextView
+        android:id="@+id/wp_item_top_replyCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/wp_item_top_resouse"
+        android:layout_alignParentRight="true"
+        android:padding="6dp"
+        android:text="看看空间"/>
+</RelativeLayout>
