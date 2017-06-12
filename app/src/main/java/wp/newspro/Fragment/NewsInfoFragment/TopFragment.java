@@ -40,8 +40,6 @@ public class TopFragment extends Fragment {
     private static ListView listView;
     private static List<TopDetail> mTopDetails;
     private static List<Banner> mBanners;
-
-
     private static Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
