@@ -47,6 +47,7 @@ public class TopFragment extends Fragment {
                 case 0:
                     FragmentTopAdapter topAdapter = new FragmentTopAdapter(mTopDetails, mContext);
                     listView.setAdapter(topAdapter);
+
                     break;
             }
         }
