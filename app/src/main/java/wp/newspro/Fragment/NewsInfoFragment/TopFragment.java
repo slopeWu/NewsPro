@@ -10,8 +10,11 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
@@ -24,6 +27,7 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import wp.newspro.Adapter.BanneryAdapter;
 import wp.newspro.Adapter.FragmentTopAdapter;
 import wp.newspro.Constance.Constant;
 import wp.newspro.Fragment.NewsInfoFragment.Bean.Banner;
@@ -40,6 +44,7 @@ public class TopFragment extends Fragment {
     private static ListView listView;
     private static List<TopDetail> mTopDetails;
     private static List<Banner> mBanners;
+    private static List<View> mViews;
     private static Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -47,11 +52,12 @@ public class TopFragment extends Fragment {
                 case 0:
                     FragmentTopAdapter topAdapter = new FragmentTopAdapter(mTopDetails, mContext);
                     listView.setAdapter(topAdapter);
-
+                    LoadBannery();
                     break;
             }
         }
     };
+    private static LayoutInflater inflater;
 
 
     @Nullable
@@ -66,7 +72,26 @@ public class TopFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mContext = getActivity().getApplicationContext();
+        inflater = LayoutInflater.from(mContext);
+
         innitData();
+    }
+
+    private static void LoadBannery() {
+        View view = inflater.inflate(R.layout.top_bannery, null);
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.wp_top_vp);
+
+        if (null != mBanners) {
+            mViews = new ArrayList<>();
+            for (int i = 0; i < mBanners.size(); i++) {
+                View itemView = inflater.inflate(R.layout.top_item_bannery, null);
+                mViews.add(itemView);
+            }
+        }
+        BanneryAdapter banneryAdapter = new BanneryAdapter(mViews, mBanners);
+        viewPager.setAdapter(banneryAdapter);
+
+        listView.addHeaderView(view);
     }
 
     //初始化数据

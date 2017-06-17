@@ -1,0 +1,57 @@
+package wp.newspro.Adapter;
+
+import android.support.v4.view.PagerAdapter;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
+
+import java.util.List;
+
+import wp.newspro.Fragment.NewsInfoFragment.Bean.Banner;
+import wp.newspro.R;
+
+/**
+ * Created by Administrator on 2017/6/17.
+ */
+
+public class BanneryAdapter extends PagerAdapter {
+    private List<View> mViews;
+    private static List<Banner> mBanners;
+
+    public BanneryAdapter(List<View> mViews, List<Banner> mBanners) {
+        this.mViews = mViews;
+        this.mBanners = mBanners;
+    }
+
+    @Override
+    public int getCount() {
+        return mViews.size();
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return view == object;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        View view = mViews.get(position);
+        SimpleDraweeView imageView = (SimpleDraweeView) view.findViewById(R.id.wp_bannery_image);
+        TextView textView = (TextView) view.findViewById(R.id.wp_bannery_title);
+        Banner banner = mBanners.get(position);
+        imageView.setImageURI(banner.getImgsrc());
+        textView.setText(banner.getTitle());
+        container.addView(view);
+        return view;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+//        super.destroyItem(container, position, object);
+        container.removeView((View)object);
+    }
+}

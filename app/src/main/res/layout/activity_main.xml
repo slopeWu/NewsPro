@@ -20,7 +20,7 @@
     <android.support.v4.app.FragmentTabHost
         android:id="@+id/wp_fragmentTabHost"
         android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
+        android:background="#E8E8E8"
         android:layout_height="wrap_content">
 
         <!--<LinearLayout-->
