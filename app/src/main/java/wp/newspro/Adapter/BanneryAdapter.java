@@ -1,6 +1,7 @@
 package wp.newspro.Adapter;
 
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -29,7 +30,7 @@ public class BanneryAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return mViews.size();
+        return Integer.MAX_VALUE;
     }
 
     @Override
@@ -39,12 +40,13 @@ public class BanneryAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View view = mViews.get(position);
+        int realposition = position % mViews.size();
+        View view = mViews.get(realposition);
         SimpleDraweeView imageView = (SimpleDraweeView) view.findViewById(R.id.wp_bannery_image);
-        TextView textView = (TextView) view.findViewById(R.id.wp_bannery_title);
-        Banner banner = mBanners.get(position);
+//        TextView textView = (TextView) view.findViewById(R.id.wp_bannery_title);
+        Banner banner = mBanners.get(realposition);
         imageView.setImageURI(banner.getImgsrc());
-        textView.setText(banner.getTitle());
+//        textView.setText(banner.getTitle());
         container.addView(view);
         return view;
     }
@@ -52,6 +54,6 @@ public class BanneryAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
 //        super.destroyItem(container, position, object);
-        container.removeView((View)object);
+        container.removeView((View) object);
     }
 }

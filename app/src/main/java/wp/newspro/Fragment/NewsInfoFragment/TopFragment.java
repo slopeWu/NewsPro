@@ -7,10 +7,11 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -45,6 +46,7 @@ public class TopFragment extends Fragment {
     private static List<TopDetail> mTopDetails;
     private static List<Banner> mBanners;
     private static List<View> mViews;
+    private static List<ImageView> doc_images;
     private static Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -54,10 +56,19 @@ public class TopFragment extends Fragment {
                     listView.setAdapter(topAdapter);
                     LoadBannery();
                     break;
+                case 1:
+                    int curindex = viewPager.getCurrentItem() + 1;
+
+                    Log.w("wp", "--------getCurrentItem" + viewPager.getCurrentItem() + "-------" + curindex + "----" + curindex % mViews.size());
+                    viewPager.setCurrentItem(curindex);
+                    break;
             }
         }
     };
     private static LayoutInflater inflater;
+    private static ViewPager viewPager;
+    private static LinearLayout docs_layout;
+    private static TextView wp_bannery_title;
 
 
     @Nullable
@@ -69,30 +80,101 @@ public class TopFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        Log.w("wp", "onStoponStoponStoponStoponStop");
+        mHandler.removeCallbacks(myr);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.w("wp", "onStartonStartonStartonStartonStart");
+        mHandler.postDelayed(myr, 4000);
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mContext = getActivity().getApplicationContext();
         inflater = LayoutInflater.from(mContext);
-
+        doc_images = new ArrayList<>();
         innitData();
+        View view = inflater.inflate(R.layout.top_bannery, null);
+        viewPager = (ViewPager) view.findViewById(R.id.wp_top_vp);
+        docs_layout = (LinearLayout) view.findViewById(R.id.wp_doc);
+        wp_bannery_title = (TextView) view.findViewById(R.id.wp_bannery_title);
+        listView.addHeaderView(view);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                setCurrentDoc(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+//                mHandler
+            }
+        });
+        viewPager.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE:
+                        mHandler.removeCallbacks(myr);
+                        return false;
+
+                    case MotionEvent.ACTION_UP:
+                        mHandler.postDelayed(myr, 4000);
+                        return false;
+                }
+                return true;
+            }
+        });
     }
 
-    private static void LoadBannery() {
-        View view = inflater.inflate(R.layout.top_bannery, null);
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.wp_top_vp);
+    private static void setCurrentDoc(int position) {
+        for (int i = 0; i < doc_images.size(); i++) {
+            ImageView imageView = doc_images.get(i);
+            if (position % doc_images.size() == i) {
+                imageView.setImageResource(R.drawable.banner_doc_big);
+            } else {
+                imageView.setImageResource(R.drawable.banner_doc_normal);
+            }
 
+        }
+        wp_bannery_title.setText(mBanners.get(position % doc_images.size()).getTitle());
+    }
+
+
+    private static void LoadBannery() {
         if (null != mBanners) {
             mViews = new ArrayList<>();
             for (int i = 0; i < mBanners.size(); i++) {
                 View itemView = inflater.inflate(R.layout.top_item_bannery, null);
                 mViews.add(itemView);
+                ImageView imageView = new ImageView(mContext);
+                imageView.setImageResource(R.drawable.banner_doc_normal);
+                LinearLayout.LayoutParams layoutParams = new
+                        LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                layoutParams.setMargins(0, 0, 10, 0);
+                docs_layout.addView(imageView, layoutParams);
+                wp_bannery_title.setText(mBanners.get(0).getTitle());
+                doc_images.add(imageView);
             }
         }
         BanneryAdapter banneryAdapter = new BanneryAdapter(mViews, mBanners);
         viewPager.setAdapter(banneryAdapter);
-
-        listView.addHeaderView(view);
+        viewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2) % mBanners.size());
+        setCurrentDoc(0);
     }
+
 
     //初始化数据
     private static void innitData() {
@@ -119,8 +201,21 @@ public class TopFragment extends Fragment {
                 list.remove(0);
                 mTopDetails.addAll(list);
                 mHandler.sendEmptyMessage(0);
+
+                mHandler.sendEmptyMessage(1);
+                mHandler.removeCallbacks(myr);
+                mHandler.post(myr);
             }
         });
     }
 
+    static Runnable myr = new Runnable() {
+        @Override
+        public void run() {
+            Message message = mHandler.obtainMessage();
+            message.what = 1;
+            mHandler.sendMessage(message);//同步
+            mHandler.postDelayed(this, 4000);//异步
+        }
+    };
 }

@@ -1,13 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/wp_top_vp"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="200dp">
 
-    </android.support.v4.view.ViewPager>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/wp_top_vp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </android.support.v4.view.ViewPager>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true">
+
+            <TextView
+                android:id="@+id/wp_bannery_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#7F000000"
+                android:ellipsize="end"
+                android:lines="1"
+                android:padding="10dp"
+                android:text=""
+                android:textColor="#fff"
+                android:textSize="14sp" />
+
+            <LinearLayout
+
+                android:id="@+id/wp_doc"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingRight="10dp" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
 </LinearLayout>

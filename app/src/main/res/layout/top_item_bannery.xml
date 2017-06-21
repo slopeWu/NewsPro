@@ -10,16 +10,4 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <TextView
-        android:id="@+id/wp_bannery_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#7F000000"
-        android:ellipsize="end"
-        android:lines="1"
-        android:padding="10dp"
-        android:text="ssss"
-        android:textColor="#fff"
-        android:textSize="14sp" />
 </RelativeLayout>
