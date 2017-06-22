@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -40,7 +41,7 @@ import wp.newspro.R;
  * Created by Administrator on 2017/6/10.
  */
 
-public class TopFragment extends Fragment {
+public class TopFragment extends Fragment implements AbsListView.OnScrollListener {
     private static Context mContext;
     private static ListView listView;
     private static List<TopDetail> mTopDetails;
@@ -52,15 +53,16 @@ public class TopFragment extends Fragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    FragmentTopAdapter topAdapter = new FragmentTopAdapter(mTopDetails, mContext);
+                    topAdapter = new FragmentTopAdapter(mTopDetails, mContext);
                     listView.setAdapter(topAdapter);
                     LoadBannery();
                     break;
                 case 1:
                     int curindex = viewPager.getCurrentItem() + 1;
-
-                    Log.w("wp", "--------getCurrentItem" + viewPager.getCurrentItem() + "-------" + curindex + "----" + curindex % mViews.size());
                     viewPager.setCurrentItem(curindex);
+                    break;
+                case 2:
+                    topAdapter.notifyDataSetChanged();
                     break;
             }
         }
@@ -69,6 +71,13 @@ public class TopFragment extends Fragment {
     private static ViewPager viewPager;
     private static LinearLayout docs_layout;
     private static TextView wp_bannery_title;
+    private static int sIndex = 0;
+    private static int eIndex = 0;
+    private static int pageSize = 20;
+    private static int requestTime = 0;
+    private boolean isLoadMore;
+    private static FragmentTopAdapter topAdapter;
+    private static boolean isRequest=false;
 
 
     @Nullable
@@ -76,20 +85,22 @@ public class TopFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_layout, container, false);
         listView = (ListView) view.findViewById(R.id.wp_top_lv);
+        listView.setOnScrollListener(this);
         return view;
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.w("wp", "onStoponStoponStoponStoponStop");
+//        Log.w("wp", "onStoponStoponStoponStoponStop");
         mHandler.removeCallbacks(myr);
+        requestTime = 0;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.w("wp", "onStartonStartonStartonStartonStart");
+//        Log.w("wp", "onStartonStartonStartonStartonStart");
         mHandler.postDelayed(myr, 4000);
     }
 
@@ -99,7 +110,13 @@ public class TopFragment extends Fragment {
         mContext = getActivity().getApplicationContext();
         inflater = LayoutInflater.from(mContext);
         doc_images = new ArrayList<>();
-        innitData();
+        mBanners = new ArrayList<>();
+        mTopDetails = new ArrayList<>();
+        innitData(true);
+        innitBanner();
+    }
+
+    private void innitBanner() {
         View view = inflater.inflate(R.layout.top_bannery, null);
         viewPager = (ViewPager) view.findViewById(R.id.wp_top_vp);
         docs_layout = (LinearLayout) view.findViewById(R.id.wp_doc);
@@ -118,7 +135,7 @@ public class TopFragment extends Fragment {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-//                mHandler
+
             }
         });
         viewPager.setOnTouchListener(new View.OnTouchListener() {
@@ -177,36 +194,65 @@ public class TopFragment extends Fragment {
 
 
     //初始化数据
-    private static void innitData() {
-        mBanners = new ArrayList<>();
-        mTopDetails = new ArrayList<>();
+    private static void innitData(final boolean first) {
+        //处理每次请求条数
+        doRequsetStartIndexAndEndIndex();
+        if (isRequest) return;
+        isRequest = true;
+//        Log.w("wp", "加载更多....");
+
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
-        Request request = new Request.Builder().get().url(Constant.TOP_URL).build();
+        Request request = new Request.Builder().get().url(Constant.getTOP_URL(sIndex, eIndex)).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                isRequest = false;
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) return;
+                requestTime++;
+//                try {
+//                    Thread.sleep(Long.valueOf(4000));
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                isRequest = false;
                 String json = response.body().string();
                 if (null == json || json.isEmpty()) return;
                 Top top = new Gson().fromJson(json, Top.class);
                 List<TopDetail> list = top.getT1348647909107();
-                List<Banner> ads = list.get(0).getAds();
-                mBanners.addAll(ads);
-                list.remove(0);
-                mTopDetails.addAll(list);
-                mHandler.sendEmptyMessage(0);
+                if (first) {
 
-                mHandler.sendEmptyMessage(1);
+                    List<Banner> ads = list.get(0).getAds();
+                    mBanners.addAll(ads);
+                    list.remove(0);
+                    mTopDetails.addAll(list);
+                    mHandler.sendEmptyMessage(0);
+                } else {
+
+                    mTopDetails.addAll(list);
+                    mHandler.sendEmptyMessage(2);
+                }
+
+
+//                mHandler.sendEmptyMessage(1);
                 mHandler.removeCallbacks(myr);
                 mHandler.post(myr);
             }
         });
+    }
+
+    private static void doRequsetStartIndexAndEndIndex() {
+        if (requestTime == 0) {
+            sIndex = 0;
+            eIndex = sIndex + pageSize;
+        } else {
+            sIndex = eIndex;
+            eIndex = eIndex + pageSize;
+        }
     }
 
     static Runnable myr = new Runnable() {
@@ -218,4 +264,23 @@ public class TopFragment extends Fragment {
             mHandler.postDelayed(this, 4000);//异步
         }
     };
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        if (scrollState == SCROLL_STATE_IDLE && isLoadMore) {
+
+            innitData(false);
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//        Log.w("wp", "firstVisibleItem=" + firstVisibleItem + "----visibleItemCount="
+//                + visibleItemCount + "---totalItemCount" + totalItemCount + "---getLastVisiblePosition()==" + view.getLastVisiblePosition());
+        if (view.getLastVisiblePosition() == totalItemCount - 1) {
+            isLoadMore = true;
+        } else {
+            isLoadMore = false;
+        }
+    }
 }
